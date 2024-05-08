@@ -459,6 +459,9 @@ bool AStarGrid2D::_solve(Point *p_begin_point, Point *p_end_point) {
 	LocalVector<Point *> open_list;
 	SortArray<Point *, SortPoints> sorter;
 
+	LocalVector<Point *> nbors;
+	nbors.reserve(8); // Make room for 8 neighboring points.
+
 	p_begin_point->g_score = 0;
 	p_begin_point->f_score = _estimate_cost(p_begin_point->id, p_end_point->id);
 	p_begin_point->abs_g_score = 0;
@@ -483,7 +486,7 @@ bool AStarGrid2D::_solve(Point *p_begin_point, Point *p_end_point) {
 		open_list.remove_at(open_list.size() - 1);
 		p->closed_pass = pass; // Mark the point as closed.
 
-		LocalVector<Point *> nbors;
+		nbors.clear();
 		_get_nbors(p, nbors);
 
 		for (Point *e : nbors) {
