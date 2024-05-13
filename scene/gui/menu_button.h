@@ -47,6 +47,9 @@ class MenuButton : public Button {
 	PropertyListHelper property_helper;
 
 	void _popup_visibility_changed(bool p_visible);
+	void _popup_id_focused(int p_id);
+	void _popup_id_pressed(int p_id);
+	void _popup_index_pressed(int p_index);
 
 protected:
 	void _notification(int p_what);

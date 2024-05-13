@@ -61,6 +61,18 @@ void MenuButton::_popup_visibility_changed(bool p_visible) {
 	}
 }
 
+void MenuButton::_popup_id_focused(int p_id) {
+	emit_signal(SNAME("id_focused"), p_id);
+}
+
+void MenuButton::_popup_id_pressed(int p_id) {
+	emit_signal(SNAME("id_pressed"), p_id);
+}
+
+void MenuButton::_popup_index_pressed(int p_index) {
+	emit_signal(SNAME("index_pressed"), p_index);
+}
+
 void MenuButton::pressed() {
 	if (popup->is_visible()) {
 		popup->hide();
@@ -186,6 +198,9 @@ void MenuButton::_bind_methods() {
 	ADD_ARRAY_COUNT("Items", "item_count", "set_item_count", "get_item_count", "popup/item_");
 
 	ADD_SIGNAL(MethodInfo("about_to_popup"));
+	ADD_SIGNAL(MethodInfo("id_focused", PropertyInfo(Variant::INT, "id")));
+	ADD_SIGNAL(MethodInfo("id_pressed", PropertyInfo(Variant::INT, "id")));
+	ADD_SIGNAL(MethodInfo("index_pressed", PropertyInfo(Variant::INT, "index")));
 
 	PopupMenu::Item defaults(true);
 
@@ -219,6 +234,9 @@ MenuButton::MenuButton(const String &p_text) :
 	add_child(popup, false, INTERNAL_MODE_FRONT);
 	popup->connect("about_to_popup", callable_mp(this, &MenuButton::_popup_visibility_changed).bind(true));
 	popup->connect("popup_hide", callable_mp(this, &MenuButton::_popup_visibility_changed).bind(false));
+	popup->connect("id_focused", callable_mp(this, &MenuButton::_popup_id_focused));
+	popup->connect("id_pressed", callable_mp(this, &MenuButton::_popup_id_pressed));
+	popup->connect("index_pressed", callable_mp(this, &MenuButton::_popup_index_pressed));
 
 	property_helper.setup_for_instance(base_property_helper, this);
 }
