@@ -31,6 +31,7 @@
 #include "animation_blend_space_1d.h"
 
 #include "animation_blend_tree.h"
+#include "core/math/math_funcs.h"
 
 void AnimationNodeBlendSpace1D::get_parameter_list(List<PropertyInfo> *r_list) const {
 	AnimationNode::get_parameter_list(r_list);
@@ -101,6 +102,9 @@ void AnimationNodeBlendSpace1D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_blend_mode", "mode"), &AnimationNodeBlendSpace1D::set_blend_mode);
 	ClassDB::bind_method(D_METHOD("get_blend_mode"), &AnimationNodeBlendSpace1D::get_blend_mode);
 
+	ClassDB::bind_method(D_METHOD("set_point_easing", "ease"), &AnimationNodeBlendSpace1D::set_point_easing);
+	ClassDB::bind_method(D_METHOD("get_point_easing"), &AnimationNodeBlendSpace1D::get_point_easing);
+
 	ClassDB::bind_method(D_METHOD("set_use_sync", "enable"), &AnimationNodeBlendSpace1D::set_use_sync);
 	ClassDB::bind_method(D_METHOD("is_using_sync"), &AnimationNodeBlendSpace1D::is_using_sync);
 
@@ -117,10 +121,15 @@ void AnimationNodeBlendSpace1D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "value_label", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_value_label", "get_value_label");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "blend_mode", PROPERTY_HINT_ENUM, "Interpolated,Discrete,Carry", PROPERTY_USAGE_NO_EDITOR), "set_blend_mode", "get_blend_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sync", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_use_sync", "is_using_sync");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "point_easing", PROPERTY_HINT_ENUM, "Linear,Smoothstep,Ease In-Out", PROPERTY_USAGE_NO_EDITOR), "set_point_easing", "get_point_easing");
 
 	BIND_ENUM_CONSTANT(BLEND_MODE_INTERPOLATED);
 	BIND_ENUM_CONSTANT(BLEND_MODE_DISCRETE);
 	BIND_ENUM_CONSTANT(BLEND_MODE_DISCRETE_CARRY);
+
+	BIND_ENUM_CONSTANT(POINT_EASING_LINEAR);
+	BIND_ENUM_CONSTANT(POINT_EASING_SMOOTHSTEP);
+	BIND_ENUM_CONSTANT(POINT_EASING_EASE_IN_OUT);
 }
 
 void AnimationNodeBlendSpace1D::get_child_nodes(List<ChildNode> *r_child_nodes) {
@@ -269,6 +278,14 @@ bool AnimationNodeBlendSpace1D::is_using_sync() const {
 	return sync;
 }
 
+void AnimationNodeBlendSpace1D::set_point_easing(PointEasing p_easing) {
+	point_easing = p_easing;
+}
+
+AnimationNodeBlendSpace1D::PointEasing AnimationNodeBlendSpace1D::get_point_easing() const {
+	return point_easing;
+}
+
 void AnimationNodeBlendSpace1D::_add_blend_point(int p_index, const Ref<AnimationRootNode> &p_node) {
 	if (p_index == blend_points_used) {
 		add_blend_point(p_node, 0);
@@ -336,6 +353,18 @@ AnimationNode::NodeTimeInfo AnimationNodeBlendSpace1D::_process(const AnimationM
 			float current_pos_inbetween = blend_pos - pos_lower;
 
 			float blend_percentage = current_pos_inbetween / distance_between_points;
+
+			switch (point_easing) {
+				case POINT_EASING_LINEAR: {
+					// Already linear.
+				} break;
+				case POINT_EASING_SMOOTHSTEP: {
+					blend_percentage = Math::smoothstep(0.0f, 1.0f, blend_percentage);
+				} break;
+				case POINT_EASING_EASE_IN_OUT: {
+					blend_percentage = Math::ease(blend_percentage, -2.0f);
+				} break;
+			}
 
 			float blend_lower = 1.0 - blend_percentage;
 			float blend_higher = blend_percentage;

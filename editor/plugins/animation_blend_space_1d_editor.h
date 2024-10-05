@@ -69,6 +69,7 @@ class AnimationNodeBlendSpace1DEditor : public AnimationTreeNodeEditorPlugin {
 
 	CheckBox *sync = nullptr;
 	OptionButton *interpolation = nullptr;
+	OptionButton *point_easing = nullptr;
 
 	HBoxContainer *edit_hb = nullptr;
 	SpinBox *edit_value = nullptr;

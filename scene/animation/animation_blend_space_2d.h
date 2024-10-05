@@ -43,6 +43,12 @@ public:
 		BLEND_MODE_DISCRETE_CARRY,
 	};
 
+	enum PointEasing {
+		POINT_EASING_LINEAR,
+		POINT_EASING_SMOOTHSTEP,
+		POINT_EASING_EASE_IN_OUT,
+	};
+
 protected:
 	enum {
 		MAX_BLEND_POINTS = 64
@@ -71,6 +77,7 @@ protected:
 	String x_label = "x";
 	String y_label = "y";
 	BlendMode blend_mode = BLEND_MODE_INTERPOLATED;
+	PointEasing point_easing = POINT_EASING_LINEAR;
 
 	void _add_blend_point(int p_index, const Ref<AnimationRootNode> &p_node);
 	void _set_triangles(const Vector<int> &p_triangles);
@@ -142,6 +149,9 @@ public:
 	void set_use_sync(bool p_sync);
 	bool is_using_sync() const;
 
+	void set_point_easing(PointEasing p_easing);
+	PointEasing get_point_easing() const;
+
 	virtual Ref<AnimationNode> get_child_by_name(const StringName &p_name) const override;
 
 	AnimationNodeBlendSpace2D();
@@ -149,5 +159,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(AnimationNodeBlendSpace2D::BlendMode)
+VARIANT_ENUM_CAST(AnimationNodeBlendSpace2D::PointEasing)
 
 #endif // ANIMATION_BLEND_SPACE_2D_H

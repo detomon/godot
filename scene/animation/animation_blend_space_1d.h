@@ -43,6 +43,12 @@ public:
 		BLEND_MODE_DISCRETE_CARRY,
 	};
 
+	enum PointEasing {
+		POINT_EASING_LINEAR,
+		POINT_EASING_SMOOTHSTEP,
+		POINT_EASING_EASE_IN_OUT,
+	};
+
 protected:
 	enum {
 		MAX_BLEND_POINTS = 64
@@ -70,6 +76,7 @@ protected:
 	StringName closest = "closest";
 
 	BlendMode blend_mode = BLEND_MODE_INTERPOLATED;
+	PointEasing point_easing = POINT_EASING_LINEAR;
 
 	bool sync = false;
 
@@ -113,6 +120,9 @@ public:
 	void set_use_sync(bool p_sync);
 	bool is_using_sync() const;
 
+	void set_point_easing(PointEasing p_easing);
+	PointEasing get_point_easing() const;
+
 	virtual NodeTimeInfo _process(const AnimationMixer::PlaybackInfo p_playback_info, bool p_test_only = false) override;
 	String get_caption() const override;
 
@@ -123,5 +133,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(AnimationNodeBlendSpace1D::BlendMode)
+VARIANT_ENUM_CAST(AnimationNodeBlendSpace1D::PointEasing)
 
 #endif // ANIMATION_BLEND_SPACE_1D_H

@@ -110,6 +110,9 @@
 		<member name="min_space" type="Vector2" setter="set_min_space" getter="get_min_space" default="Vector2(-1, -1)">
 			The blend space's X and Y axes' lower limit for the points' position. See [method add_blend_point].
 		</member>
+		<member name="point_easing" type="int" setter="set_point_easing" getter="get_point_easing" enum="AnimationNodeBlendSpace2D.PointEasing" default="0">
+			Controls the easing between points. See [enum PointEasing] constants.
+		</member>
 		<member name="snap" type="Vector2" setter="set_snap" getter="get_snap" default="Vector2(0.1, 0.1)">
 			Position increment to snap to when moving a point.
 		</member>
@@ -140,6 +143,15 @@
 		</constant>
 		<constant name="BLEND_MODE_DISCRETE_CARRY" value="2" enum="BlendMode">
 			Similar to [constant BLEND_MODE_DISCRETE], but starts the new animation at the last animation's playback position.
+		</constant>
+		<constant name="POINT_EASING_LINEAR" value="0" enum="PointEasing">
+			The easing between points is linear.
+		</constant>
+		<constant name="POINT_EASING_SMOOTHSTEP" value="1" enum="PointEasing">
+			The easing between points is a [method @GlobalScope.smoothstep].
+		</constant>
+		<constant name="POINT_EASING_EASE_IN_OUT" value="2" enum="PointEasing">
+			The easing between points is quadratic ease in-out.
 		</constant>
 	</constants>
 </class>

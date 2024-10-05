@@ -336,6 +336,7 @@ void AnimationNodeBlendSpace1DEditor::_update_space() {
 
 	sync->set_pressed(blend_space->is_using_sync());
 	interpolation->select(blend_space->get_blend_mode());
+	point_easing->select(blend_space->get_point_easing());
 
 	label_value->set_text(blend_space->get_value_label());
 
@@ -364,6 +365,8 @@ void AnimationNodeBlendSpace1DEditor::_config_changed(double) {
 	undo_redo->add_undo_method(blend_space.ptr(), "set_use_sync", blend_space->is_using_sync());
 	undo_redo->add_do_method(blend_space.ptr(), "set_blend_mode", interpolation->get_selected());
 	undo_redo->add_undo_method(blend_space.ptr(), "set_blend_mode", blend_space->get_blend_mode());
+	undo_redo->add_do_method(blend_space.ptr(), "set_point_easing", point_easing->get_selected());
+	undo_redo->add_undo_method(blend_space.ptr(), "set_point_easing", blend_space->get_point_easing());
 	undo_redo->add_do_method(this, "_update_space");
 	undo_redo->add_undo_method(this, "_update_space");
 	undo_redo->commit_action();
@@ -586,6 +589,10 @@ void AnimationNodeBlendSpace1DEditor::_notification(int p_what) {
 			interpolation->add_icon_item(get_editor_theme_icon(SNAME("TrackContinuous")), TTR("Continuous"), 0);
 			interpolation->add_icon_item(get_editor_theme_icon(SNAME("TrackDiscrete")), TTR("Discrete"), 1);
 			interpolation->add_icon_item(get_editor_theme_icon(SNAME("TrackCapture")), TTR("Capture"), 2);
+			point_easing->clear();
+			point_easing->add_icon_item(get_editor_theme_icon(SNAME("CurveLinear")), TTR("Linear"), 0);
+			point_easing->add_icon_item(get_editor_theme_icon(SNAME("CurveInOut")), TTR("Smoothstep"), 1);
+			point_easing->add_icon_item(get_editor_theme_icon(SNAME("CurveInOut")), TTR("Quadratic"), 2);
 		} break;
 
 		case NOTIFICATION_PROCESS: {
@@ -647,6 +654,7 @@ void AnimationNodeBlendSpace1DEditor::edit(const Ref<AnimationNode> &p_node) {
 	max_value->set_editable(!read_only);
 	sync->set_disabled(read_only);
 	interpolation->set_disabled(read_only);
+	point_easing->set_disabled(read_only);
 }
 
 AnimationNodeBlendSpace1DEditor *AnimationNodeBlendSpace1DEditor::singleton = nullptr;
@@ -721,6 +729,13 @@ AnimationNodeBlendSpace1DEditor::AnimationNodeBlendSpace1DEditor() {
 	interpolation = memnew(OptionButton);
 	top_hb->add_child(interpolation);
 	interpolation->connect(SceneStringName(item_selected), callable_mp(this, &AnimationNodeBlendSpace1DEditor::_config_changed));
+
+	top_hb->add_child(memnew(VSeparator));
+
+	top_hb->add_child(memnew(Label(TTR("Point Easing:"))));
+	point_easing = memnew(OptionButton);
+	top_hb->add_child(point_easing);
+	point_easing->connect(SceneStringName(item_selected), callable_mp(this, &AnimationNodeBlendSpace1DEditor::_config_changed));
 
 	edit_hb = memnew(HBoxContainer);
 	top_hb->add_child(edit_hb);
