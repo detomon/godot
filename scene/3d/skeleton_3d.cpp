@@ -1091,6 +1091,8 @@ void Skeleton3D::_force_update_bone_children_transforms(int p_bone_idx) const {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone_idx, bone_size);
 
+	_update_process_order();
+
 	Bone *bonesptr = bones.ptr();
 
 	// Loop through nested set.
