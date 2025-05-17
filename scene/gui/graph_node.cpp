@@ -643,45 +643,42 @@ void GraphNode::_notification(int p_what) {
 
 			// Take the HboxContainer child into account.
 			if (get_child_count(false) > 0) {
-				int slot_index = 0;
 				for (const KeyValue<int, Slot> &E : slot_table) {
-					if (E.key < 0 || E.key >= slot_y_cache.size()) {
+					const int slot_index = E.key;
+
+					if (slot_index < 0 || slot_index >= slot_y_cache.size()) {
 						continue;
 					}
-					if (!slot_table.has(E.key)) {
-						continue;
-					}
-					const Slot &slot = slot_table[E.key];
+
+					const Slot &slot = E.value;
+					const int slot_y = slot_y_cache[slot_index];
 
 					// Left port.
 					if (slot.enable_left) {
-						draw_port(slot_index, Point2i(port_h_offset, slot_y_cache[E.key]), true, slot.color_left);
+						draw_port(slot_index, Point2i(port_h_offset, slot_y), true, slot.color_left);
 					}
 
 					// Right port.
 					if (slot.enable_right) {
-						draw_port(slot_index, Point2i(get_size().x - port_h_offset, slot_y_cache[E.key]), false, slot.color_right);
+						draw_port(slot_index, Point2i(get_size().x - port_h_offset, slot_y), false, slot.color_right);
 					}
 
 					if (slot_index == selected_slot) {
 						Size2i port_sz = theme_cache.port->get_size();
-						draw_style_box(sb_slot_selected, Rect2i(port_h_offset - port_sz.x, slot_y_cache[E.key] + sb_panel->get_margin(SIDE_TOP) - port_sz.y, port_sz.x * 2, port_sz.y * 2));
-						draw_style_box(sb_slot_selected, Rect2i(get_size().x - port_h_offset - port_sz.x, slot_y_cache[E.key] + sb_panel->get_margin(SIDE_TOP) - port_sz.y, port_sz.x * 2, port_sz.y * 2));
+						draw_style_box(sb_slot_selected, Rect2i(port_h_offset - port_sz.x, slot_y + sb_panel->get_margin(SIDE_TOP) - port_sz.y, port_sz.x * 2, port_sz.y * 2));
+						draw_style_box(sb_slot_selected, Rect2i(get_size().x - port_h_offset - port_sz.x, slot_y + sb_panel->get_margin(SIDE_TOP) - port_sz.y, port_sz.x * 2, port_sz.y * 2));
 					}
 
 					// Draw slot stylebox.
 					if (slot.draw_stylebox) {
-						Control *child = Object::cast_to<Control>(get_child(E.key, false));
-						if (!child || !child->is_visible_in_tree()) {
-							continue;
+						Control *child = Object::cast_to<Control>(get_child(slot_index, false));
+						if (child && child->is_visible_in_tree()) {
+							Rect2 child_rect = child->get_rect();
+							child_rect.position.x = sb_panel->get_margin(SIDE_LEFT);
+							child_rect.size.width = width;
+							draw_style_box(sb_slot, child_rect);
 						}
-						Rect2 child_rect = child->get_rect();
-						child_rect.position.x = sb_panel->get_margin(SIDE_LEFT);
-						child_rect.size.width = width;
-						draw_style_box(sb_slot, child_rect);
 					}
-
-					slot_index++;
 				}
 			}
 
